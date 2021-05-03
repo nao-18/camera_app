@@ -1,12 +1,17 @@
 package com.example.mycamera
 
+import android.Manifest
 import android.content.ContentValues
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.mycamera.databinding.ActivityMainBinding
 import java.text.SimpleDateFormat
 import java.util.*
@@ -14,6 +19,7 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
     val REQUEST_PREVIEW = 1
     val REQUEST_PICTURE = 2
+    val REQUEST_EXTERNAL_STORAGE = 3
 
     lateinit var currentPhotoUri : Uri
 
@@ -36,6 +42,37 @@ class MainActivity : AppCompatActivity() {
             when (binding.radioGroup.checkedRadioButtonId) {
                 R.id.preview -> preview()
                 R.id.takePicture ->takePicture()
+            }
+        }
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            storagePermission()
+        }
+    }
+
+    private fun storagePermission() {
+        val permission = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                REQUEST_EXTERNAL_STORAGE
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            REQUEST_EXTERNAL_STORAGE -> {
+                binding.cameraButton.isEnabled = grantResults.isNotEmpty() &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED
             }
         }
     }
