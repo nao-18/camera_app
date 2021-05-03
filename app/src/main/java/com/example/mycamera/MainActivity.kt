@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
     val REQUEST_PREVIEW = 1
     val REQUEST_PICTURE = 2
 
-    lateinit var currentPhotoUri: Uri
+    lateinit var currentPhotoUri : Uri
 
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             intent.resolveActivity(packageManager)?.also {
                 val time: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
                 val values = ContentValues().apply {
-                    put(MediaStore.Images.Media.DISPLAY_NAME, "$(time)_.jpg")
+                    put(MediaStore.Images.Media.DISPLAY_NAME, "${time}_.jpg")
                     put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
                 }
                 val collection = MediaStore.Images.Media.getContentUri("external")
@@ -73,7 +73,13 @@ class MainActivity : AppCompatActivity() {
             binding.imageView.setImageBitmap(imageBitmap)
         } else if (requestCode == REQUEST_PICTURE) {
             when (resultCode) {
-                RESULT_OK -> {}
+                RESULT_OK -> {
+                    Intent(Intent.ACTION_SEND).also { share ->
+                        share.type = "image/*"
+                        share.putExtra(Intent.EXTRA_STREAM, currentPhotoUri)
+                        startActivity(Intent.createChooser(share, "Share to"))
+                    }
+                }
                 else -> {
                     contentResolver.delete(currentPhotoUri, null, null)
                 }
