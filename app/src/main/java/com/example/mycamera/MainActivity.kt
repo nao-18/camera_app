@@ -1,10 +1,14 @@
 package com.example.mycamera
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import com.example.mycamera.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+    val REQUEST_PREVIEW = 1
+
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +32,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun preview() {}
+    private fun preview() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { intent ->
+            intent.resolveActivity(packageManager)?.also {
+                startActivityForResult(intent, REQUEST_PREVIEW)
+            }
+        }
+    }
     private fun takePicture() {}
 }
