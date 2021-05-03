@@ -1,6 +1,7 @@
 package com.example.mycamera
 
 import android.content.Intent
+import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
@@ -40,4 +41,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun takePicture() {}
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_PREVIEW && resultCode == RESULT_OK) {
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+            binding.imageView.setImageBitmap(imageBitmap)
+        }
+    }
 }
